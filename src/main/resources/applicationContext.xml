@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:conf/system.properties</value>
+                <value>classpath:conf/jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <!-- 连接MySQL
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/mytest"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+        -->
+
+        <!-- 连接Oracle
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+        <property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"></property>
+        <property name="username" value="scott"></property>
+        <property name="password" value="tiger"></property>
+        -->
+        <!-- 连接SQL Server-->
+        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"></property>
+        <property name="url" value="jdbc:sqlserver://192.168.1.112:1433;databaseName=gyzz"></property>
+        <property name="username" value="sa"></property>
+        <property name="password" value="root"></property>
+
+        <property name="maxActive" value="100"></property>
+        <property name="maxIdle" value="30"></property>
+        <property name="maxWait" value="500"></property>
+        <property name="defaultAutoCommit" value="true"></property>
+    </bean>
+
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="com.leoman.entity"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="showSql" value="true"/>
+                <!--<property name="generateDdl" value="true" />-->
+                <property name="database" value="SQL_SERVER"/>
+            </bean>
+        </property>
+        <property name="jpaDialect">
+            <bean class="com.leoman.core.jpa.HibernateJpaIsolationSupportDialect"/>
+        </property>
+        <property name="persistenceUnitName" value="service.jpa"/>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- 启用 annotation事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- 配置Spring Data JPA扫描目录 -->
+    <jpa:repositories base-package="com.leoman.dao"/>
+
+    <!-- AOP -->
+    <aop:aspectj-autoproxy/>
+
+
+    <context:component-scan base-package="com.leoman">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+
+    <bean id="beanUtil" class="com.leoman.utils.BeanUtil"/>
+</beans>

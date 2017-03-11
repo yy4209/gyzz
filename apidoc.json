@@ -1,0 +1,17 @@
+{
+  "name": "gyzz接口文档",
+  "version": "0.0.1",
+  "description": "",
+  "title": "gyzz接口测试界面",
+  "url": "http://192.168.1.112:8883/gyzz",
+  "sampleUrl": "http://192.168.1.112:8883/gyzz",
+  "header": {
+    "title": "start",
+    "filename": "header.md"
+  },
+  "template": {
+    "forceLanguage": "zh",
+    "withCompare": true,
+    "withGenerator": true
+  }
+}
